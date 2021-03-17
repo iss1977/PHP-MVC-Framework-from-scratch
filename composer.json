@@ -1,0 +1,16 @@
+{
+    "name": "ioans/mvc-framework",
+    "description": "Fron scratch",
+    "authors": [
+        {
+            "name": "iss1977",
+            "email": "ioan.szucs@gmail.com"
+        }
+    ],
+    "autoload":{
+        "psr-4":{
+            "app\\": "./"
+        }
+    },
+    "require": {}
+}
