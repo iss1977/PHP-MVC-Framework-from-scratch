@@ -2,21 +2,32 @@
 
 namespace app\core;
 
+
+
 class Application
 {
+    // we define a root directory for our app
+    public static string $ROOT_DIR;
     // the router will be stored in Application
     public Router $router;
-    private Request $request;
+    public Request $request;
+    public Response $response;
 
-    public function __construct()
+    public static Application $app;
+
+    public function __construct($rootPath)
     {
-        // we don't have to specify more than that, because class Application and Router have the same namespace
+        self::$ROOT_DIR = $rootPath; // so we use always this directory in our project
+        self::$app = $this; // ...so we can access the application from the router like this: Application::$app
+        
+
         $this->request = new Request();
         $this->router = new Router($this->request);    
+        $this->response = new Response();
     }
 
     public function run()
     {
-        $this->router->resolve();
+        echo $this->router->resolve();
     }
 }

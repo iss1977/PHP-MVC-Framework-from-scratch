@@ -40,16 +40,45 @@
     {
       $path = $this->request->getPath(); // will return the path without query part ex.: /users/hello
       $method = $this->request->getMethod(); // Returns 'get' or 'post'. In  this form we can use the value directly in the assoc array
-      echo '<pre>';
-      var_dump($this->routes);
-      echo '</pre>';
       $callback = $this->routes[$method][$path] ?? false; // we can get the coresponding callback function from the routes array
-      echo '<pre>'; echo '$callback is : '; var_dump($callback); echo '</pre>';
+
       if($callback ===false){
-        echo "{$path} - Not found";
-        exit;
+        Application::$app->response->setStatusCode(404);
+        return 'Not Found';
       }
-      // we found the route if we got here, so call the coresponding function
-      echo call_user_func($callback);
+
+      //if $callback is string, then we asume that we want to load a view. So we are calling renderView()...
+      if(is_string($callback)){
+        return $this->renderView($callback);
+        
+      }
+      
+      // we found the route if we got here, so call the coresponding function. works also whithout return....
+      return call_user_func($callback);
+
+      
     }
+
+    public function renderView($view){
+      $layoutContent = $this->layoutContent();
+      $viewContent = $this->renderOnlyView($view);
+      
+      $webPageContent = str_replace('{{content}}',$viewContent, $layoutContent); // search for {{content}} in $layoutContent and replace with $viewContent
+      return $webPageContent;
+    }
+
+    protected function layoutContent(){
+      // webpage output buffer
+      ob_start();
+      include_once Application::$ROOT_DIR . '/views/layouts/main.php';
+      return ob_get_clean();// display and clear.
+    }
+
+    protected function renderOnlyView($view)
+    {
+      ob_start();
+      include_once Application::$ROOT_DIR . "/views/$view.php";
+      return ob_get_clean();
+    }
+
  }
