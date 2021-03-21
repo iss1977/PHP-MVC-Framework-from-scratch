@@ -10,11 +10,13 @@
  {
     protected array $routes = [];
     public Request $request;
+    public Response $response;
 
     
-    public function __construct(Request $request)
+    public function __construct(Request $request, Response $response)
     {
       $this->request = $request;
+      $this->response = $response;
     }
 
 
@@ -35,6 +37,11 @@
         $this->routes['get'][$path] = $callback;
     }  
 
+
+    public function post($path, $callback){
+        $this->routes['post'][$path] = $callback;
+    }
+
     public function resolve()
     // we call this function to resolve the current path. Example from $application->run()
     {
@@ -43,8 +50,8 @@
       $callback = $this->routes[$method][$path] ?? false; // we can get the coresponding callback function from the routes array
 
       if($callback ===false){
-        Application::$app->response->setStatusCode(404);
-        return 'Not Found';
+        $this->response->setStatusCode(404);
+        return $this->renderView('_404');
       }
 
       //if $callback is string, then we asume that we want to load a view. So we are calling renderView()...
@@ -81,4 +88,9 @@
       return ob_get_clean();
     }
 
+    protected function renderContent($viewContent)
+    {
+      $layoutContent = $this->layoutContent();
+      return str_replace('{{content}}', $viewContent , $layoutContent);
+    }
  }
