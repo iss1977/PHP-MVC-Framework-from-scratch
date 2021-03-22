@@ -60,15 +60,30 @@
         
       }
       
-      // we found the route if we got here, so call the coresponding function. works also whithout return....
-      return call_user_func($callback);
+      // if we get to this point, $callback can be an array (see index.php).
+      if(is_array($callback)){
+        $nameOfClass = $callback[0];
+        $temporaryObject = new $nameOfClass();
+        $callback[0] = $temporaryObject; // we prepare $callback to be an array with an instance on first element and the function name as second element.
+
+      }
+      
+      // geeksforgeeks: Another way to use object 
+      // $obj = new GFG(); 
+      // call_user_func(array($obj, 'show')); 
+      // and this is the way we use this.
+      // it will call SiteController with the name of the function bioth from $callback array and pass as parameter $this->request.
+      return call_user_func($callback, $this->request); //  works also whithout return....
 
       
     }
 
-    public function renderView($view){
+    /**
+     * function renderView
+     */
+    public function renderView($view, $params=[]){
       $layoutContent = $this->layoutContent();
-      $viewContent = $this->renderOnlyView($view);
+      $viewContent = $this->renderOnlyView($view, $params);
       
       $webPageContent = str_replace('{{content}}',$viewContent, $layoutContent); // search for {{content}} in $layoutContent and replace with $viewContent
       return $webPageContent;
@@ -81,9 +96,14 @@
       return ob_get_clean();// display and clear.
     }
 
-    protected function renderOnlyView($view)
+    protected function renderOnlyView($view, $params)
     {
+      foreach ($params as $key => $value) {
+        $$key = $value; // if $key evaluates to "name" then we will have a variable $name with the value $value
+      }
+
       ob_start();
+      // the variables initiated in the foreach loop will be avaible 
       include_once Application::$ROOT_DIR . "/views/$view.php";
       return ob_get_clean();
     }

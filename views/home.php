@@ -12,3 +12,7 @@ echo '<h1>Home</h1>';
 
 echo 'Number is '.$number;
 echo 'Other number is '.$otherNumber;
+
+?>
+
+<h1>The variable we send was<?php echo $name ?? 'Variable not present';?></h1>
