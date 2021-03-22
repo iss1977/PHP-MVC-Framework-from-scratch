@@ -15,6 +15,7 @@ $_SESSION["number"] = $_SESSION["number"]?? 0;
  
  // to be able to use the Application class, we must import it with use :
 
+use app\controllers\AuthController;
 use app\controllers\SiteController;
 use app\core\Application;
 
@@ -27,5 +28,9 @@ $app->router->get('/contact', [SiteController::class,'contact']); //was  $app->r
 
 $app->router->post('/contact', [SiteController::class,'handleContact']); // this will be passed to Router and it will call "call_user_func($callback);" that accepts also an array like  [SiteController::class,'handleContact']
 
+$app->router->get('/login', [AuthController::class,'login']);
+$app->router->post('/login', [AuthController::class,'login']);
+$app->router->get('/register', [AuthController::class,'register']);
+$app->router->post('/register', [AuthController::class,'register']);
 
 $app->run();

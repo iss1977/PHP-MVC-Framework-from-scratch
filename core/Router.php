@@ -21,24 +21,13 @@
 
 
     public function get($path, $callback)
-      {
-        // when we call this function it will save (register) the route to the array like this:
-        // $routes = [
-        //     'get' => [
-        //         '/' => callack,
-        //         '/contact' => other_cvallback
-        //     ],
-        //     'post'=> [
-        //         '/' => callback ,
-        //         etc
-        //     ]
-        // ];
-
+    {
         $this->routes['get'][$path] = $callback;
     }  
 
 
-    public function post($path, $callback){
+    public function post($path, $callback)
+    {
         $this->routes['post'][$path] = $callback;
     }
 
@@ -46,15 +35,15 @@
     // we call this function to resolve the current path. Example from $application->run()
     {
       $path = $this->request->getPath(); // will return the path without query part ex.: /users/hello
-      $method = $this->request->getMethod(); // Returns 'get' or 'post'. In  this form we can use the value directly in the assoc array
-      $callback = $this->routes[$method][$path] ?? false; // we can get the coresponding callback function from the routes array
+      $method = $this->request->method(); // Returns 'get' or 'post'. In  this form we can use the value directly in the assoc array
+      $callback = $this->routes[$method][$path] ?? false; // we can get the corresponding callback function from the routes array
 
       if($callback ===false){
         $this->response->setStatusCode(404);
         return $this->renderView('_404');
       }
 
-      //if $callback is string, then we asume that we want to load a view. So we are calling renderView()...
+      //if $callback is string, then we assume that we want to load a view. So we are calling renderView()...
       if(is_string($callback)){
         return $this->renderView($callback);
         
@@ -65,6 +54,7 @@
         $nameOfClass = $callback[0];
         $temporaryObject = new $nameOfClass();
         $callback[0] = $temporaryObject; // we prepare $callback to be an array with an instance on first element and the function name as second element.
+          Application::$app->setController($temporaryObject);
 
       }
       
@@ -72,8 +62,8 @@
       // $obj = new GFG(); 
       // call_user_func(array($obj, 'show')); 
       // and this is the way we use this.
-      // it will call SiteController with the name of the function bioth from $callback array and pass as parameter $this->request.
-      return call_user_func($callback, $this->request); //  works also whithout return....
+      // it will call SiteController with the name of the function both from $callback array and pass as parameter $this->request.
+      return call_user_func($callback, $this->request); //  works also without return....
 
       
     }
@@ -90,9 +80,11 @@
     }
 
     protected function layoutContent(){
+        $layout = Application::$app->getController()->layout;
+
       // webpage output buffer
       ob_start();
-      include_once Application::$ROOT_DIR . '/views/layouts/main.php';
+      include_once Application::$ROOT_DIR . "/views/layouts/$layout.php";
       return ob_get_clean();// display and clear.
     }
 
@@ -103,7 +95,7 @@
       }
 
       ob_start();
-      // the variables initiated in the foreach loop will be avaible 
+      // the variables initiated in the foreach loop will be available
       include_once Application::$ROOT_DIR . "/views/$view.php";
       return ob_get_clean();
     }
