@@ -36,21 +36,41 @@ abstract class Model // abstract just to not create mistakenly an object from it
                 }
                 // now we have a $ruleName representing the name of th rule. ex: self::RULE_MIN from  " [self::RULE_MIN, 'min' => 8] "
                 if ($ruleName===self::RULE_REQUIRED && !$value){ // if this rule exist and the value is not set, rule not applied.
-                    $this->addError($attribute, $ruleName);
+                    $this->addError($attribute, self::RULE_REQUIRED);
                 }
-            }
+                if ($ruleName === self::RULE_EMAIL && !filter_var($value,FILTER_VALIDATE_EMAIL)){
+                    $this->addError($attribute, self::RULE_EMAIL);
+                }
+                if ($ruleName === self::RULE_MIN && !($rule['min'] <= strlen($value)) ){
+                    $this->addError($attribute, self::RULE_MIN, $rule);
+                }
+                if ($ruleName === self::RULE_MAX && ($rule['max'] < strlen($value)) ){
+                    $this->addError($attribute, self::RULE_MAX, $rule);
+                }
+                if ($ruleName === self::RULE_MATCH && $rule['match']!==$value){
+                    $this->addError($attribute, self::RULE_MATCH, $rule);
+                }
+            } //foreach
+        } //foreach
 
-        }
+        echo '<pre>';
+        var_dump($this->errors);
+        echo '</pre>';
         return empty($this->errors); // if there are no errors, we return true.
     }
 
     /** Adds a new validation error when validating data.
      * @param string $attribute
      * @param string $rule
+     * @param array $params
      */
-    private function addError(string $attribute,string $rule)
+    private function addError(string $attribute,string $rule, $params = []) // $params is the $rule . ex: [self::RULE_MIN, 'min' => 8]
     {
         $message = $this->errorMessages()[$rule] ?? '-error-';
+        foreach ($params as $key => $value) {
+            $message = str_replace("{{$key}}",$value,$message);
+        }
+
         $this->errors[$attribute][]= $message; // this way we add an element to the array.
 
     }
@@ -64,6 +84,17 @@ abstract class Model // abstract just to not create mistakenly an object from it
             self::RULE_MAX => 'Max length of this field must be {max}',
             self::RULE_MATCH => 'This field must match with {match}'
         ];
+    }
+
+    public function hasErrors($attribute)
+    {
+        return ($this->errors[$attribute]?? false);
+
+    }
+
+    // we use this in the view
+    public function getFirstError(string $attribute){
+        return $this->errors[$attribute][0] ?? 'No errors';
     }
 
 }

@@ -3,15 +3,22 @@
     <form action ="" method="POST">
         <div class="row">
             <div class="col">
-                <div class="mb-3">
+                <div class="form-group">
                     <label for="firstname" class="form-label">Firstname</label>
-                    <input type="text" class="form-control" name ="firstname" id="firstname" >
+                    <input type="text"
+                           value="<?php echo $model->firstname ?>"
+                           class="form-control <?php echo $model->hasErrors('firstname')? 'is-invalid':'' ?>" name ="firstname" id="firstname" >
+                    <div class="invalid-feedback">
+                        <?php echo $model->getFirstError('firstname') ?>
+                        <p>Hello</p>
+                    </div>
                 </div>
             </div>
             <div class="col">
-                <div class="mb-3">
+                <div class=form-group">
                     <label for="lastname" class="form-label">Lastname</label>
-                    <input type="text" class="form-control" name ="lastname" id="lastname" >
+                    <input type="text" value = "" class="form-control" name ="lastname" id="lastname" >
+
                 </div>
             </div>
         </div>

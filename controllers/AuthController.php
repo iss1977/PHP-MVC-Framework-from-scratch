@@ -31,10 +31,6 @@ class AuthController extends Controller
             if($registerModel->validate() && $registerModel->register()){
                 return 'Success';
             }
-            echo '<pre>';
-            var_dump($registerModel->errors);
-            echo '</pre>';
-
 
             // if we arrive here, there are errors and the form did not pass.
             return $this->render('register', [
@@ -44,7 +40,9 @@ class AuthController extends Controller
             return 'Handling form data';
         }
         // It's a GET request
-        return $this->render('register');
+        return $this->render('register',[
+            'model' => new RegisterModel()
+        ]);
     }
 
 }
