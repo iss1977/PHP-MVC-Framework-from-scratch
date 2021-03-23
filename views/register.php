@@ -27,7 +27,7 @@
         </div>
         <div class="mb-3">
             <label for="password_again" class="form-label">Password again</label>
-            <input type="password_again" name="password_again" class="form-control" id="password_again" >
+            <input type="password" name="confirmPassword" class="form-control" id="password_again" >
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
