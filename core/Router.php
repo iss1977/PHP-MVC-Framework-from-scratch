@@ -98,14 +98,6 @@
       }
 
       ob_start();
-      echo '<pre>';
-      echo 'Var dump parameters before render view';
-      var_dump($params);
-      echo '</br> The MODEL:';
-      print_r($model->hasErrors('firstname') ?? 'Dont exist');
-      echo '</pre>';
-
-
       // the variables initiated in the foreach loop will be available
       include_once Application::$ROOT_DIR . "/views/$view.php";
       return ob_get_clean();

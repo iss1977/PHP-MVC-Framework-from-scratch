@@ -25,7 +25,10 @@ abstract class Model // abstract just to not create mistakenly an object from it
 
     abstract function rules():array; // this must be implemented
 
-    public function validate()
+    /**
+     * Validates the form
+    */
+    public function validate(): bool
     {
         foreach($this->rules() as $attribute => $rules){ // $rules will be an array. See child class.
             $value = $this->{$attribute} ?? false; // the data stored with loadData. $value contains the sent form data. if the object don't have that attribute, $value will be false
@@ -47,15 +50,12 @@ abstract class Model // abstract just to not create mistakenly an object from it
                 if ($ruleName === self::RULE_MAX && ($rule['max'] < strlen($value)) ){
                     $this->addError($attribute, self::RULE_MAX, $rule);
                 }
-                if ($ruleName === self::RULE_MATCH && $rule['match']!==$value){
+                if ($ruleName === self::RULE_MATCH && $this->{$rule['match']} !==$value){
                     $this->addError($attribute, self::RULE_MATCH, $rule);
                 }
             } //foreach
         } //foreach
 
-        echo '<pre>';
-        var_dump($this->errors);
-        echo '</pre>';
         return empty($this->errors); // if there are no errors, we return true.
     }
 
