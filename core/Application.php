@@ -12,6 +12,7 @@ class Application
     public Router $router;
     public Request $request;
     public Response $response;
+    public Database $db;
 
     public static Application $app;
 
@@ -33,7 +34,7 @@ class Application
         $this->controller = $controller;
     }
 
-    public function __construct($rootPath)
+    public function __construct($rootPath, array $config)
     {
         self::$ROOT_DIR = $rootPath; // so we use always this directory in our project
         self::$app = $this; // ...so we can access the application from the router like this: Application::$app
@@ -41,7 +42,9 @@ class Application
 
         $this->request = new Request();
         $this->response = new Response();
-        $this->router = new Router($this->request, $this->response);    
+        $this->router = new Router($this->request, $this->response);
+
+        $this->db = new Database($config['db']); // subarray "dn" will be only send
     }
 
     public function run()
