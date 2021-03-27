@@ -14,7 +14,6 @@ class AuthController extends Controller
         $this->render('login');
     }
 
-
     /**
      * THis method handles the POST request with the form data and GET request to render the page.
      * @param Request $request
