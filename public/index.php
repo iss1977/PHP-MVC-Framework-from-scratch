@@ -1,10 +1,4 @@
 <?php
-session_start();
-
-$number = 0;
-
-$_SESSION["number"] = $_SESSION["number"]?? 0;
-
 
 /**
  * MAIN 
