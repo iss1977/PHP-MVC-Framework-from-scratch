@@ -11,6 +11,7 @@ abstract class Model // abstract just to not create mistakenly an object from it
     public const RULE_MIN ='min';
     public const RULE_MAX ='max';
     public const RULE_MATCH ='match';
+    public const RULE_UNIQUE ='unique';
 
     public array $errors =[]; // this will contain all the errors as we run the function validate()
 
@@ -30,7 +31,7 @@ abstract class Model // abstract just to not create mistakenly an object from it
     */
     public function validate(): bool
     {
-        foreach($this->rules() as $attribute => $rules){ // $rules will be an array. See child class.
+        foreach($this->rules() as $attribute => $rules){ // $rules will be an array. See child class. Ex: class Users:  'email' => [self::RULE_REQUIRED, self::RULE_EMAIL, [self::RULE_UNIQUE, 'class'=> self::class]]
             $value = $this->{$attribute} ?? false; // the data stored with loadData. $value contains the sent form data. if the object don't have that attribute, $value will be false
             foreach ($rules as $rule) {
                 $ruleName = $rule; // if it's an array it will be overwritten
@@ -52,6 +53,20 @@ abstract class Model // abstract just to not create mistakenly an object from it
                 }
                 if ($ruleName === self::RULE_MATCH && $this->{$rule['match']} !==$value){
                     $this->addError($attribute, self::RULE_MATCH, $rule);
+                }
+                if ($ruleName === self::RULE_UNIQUE){
+                    $className = $rule['class']; // in this class is the name of the table where the field should be unique.
+                    $uniqueFieldName = $rule['unique-field'] ?? $attribute;
+                    $tableName = $className::tableName();
+                    $sql= "SELECT * FROM $tableName where $uniqueFieldName = :param"; // SELECT * FROM users WHERE email = :email
+                    $statement = Application::$app->db->prepare($sql);
+                    $statement->bindValue(":param",$value);
+                    $statement->execute();
+                    $record = $statement->fetchObject();
+                    if ($record){
+                       $this->addError($attribute, self::RULE_UNIQUE, ['field'=>$attribute]);
+                    }
+
                 }
             } //foreach
         } //foreach
@@ -82,7 +97,8 @@ abstract class Model // abstract just to not create mistakenly an object from it
             self::RULE_EMAIL => 'Must be a valid e-mail address',
             self::RULE_MIN => 'Min length of this field must be {min}',
             self::RULE_MAX => 'Max length of this field must be {max}',
-            self::RULE_MATCH => 'This field must match with {match}'
+            self::RULE_MATCH => 'This field must match with {match}',
+            self::RULE_UNIQUE => 'Record with this {field} already exists.'
         ];
     }
 

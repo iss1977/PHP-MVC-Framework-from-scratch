@@ -85,4 +85,15 @@ class Database
     {
         echo '['.date('Y-m-d H:i:s').'] - '.$message.PHP_EOL;
     }
+
+    /** Helper method
+     * @param $stm
+     * @return false|\PDOStatement
+     */
+    public static function prepare($stm) // shortcut to Application::$app->db->pdo->prepare(). For easy access.
+    {
+        return Application::$app->db->pdo->prepare($stm); // returns a statement.
+    }
+
+
 }

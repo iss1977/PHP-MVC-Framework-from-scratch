@@ -4,7 +4,7 @@ namespace app\controllers;
 
 use app\core\Controller;
 use app\core\Request;
-use app\models\RegisterModel;
+use app\models\User;
 
 class AuthController extends Controller
 {
@@ -24,23 +24,23 @@ class AuthController extends Controller
         $this->setLayout('auth');
         // It's a POST request
         if($request->isPost()){
-            $registerModel = new RegisterModel();
-            $registerModel->loadData($request->getBody());
+            $user = new User();
+            $user->loadData($request->getBody());
 
-            if($registerModel->validate() && $registerModel->register()){
+            if($user->validate() && $user->save()){
                 return 'Success';
             }
 
             // if we arrive here, there are errors and the form did not pass.
             return $this->render('register', [
-                'model' => $registerModel
+                'model' => $user
             ]);
 
             return 'Handling form data';
         }
         // It's a GET request
         return $this->render('register',[
-            'model' => new RegisterModel()
+            'model' => new User()
         ]);
     }
 
