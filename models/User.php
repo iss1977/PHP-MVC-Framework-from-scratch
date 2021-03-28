@@ -57,4 +57,17 @@ class User extends DbModel
     {
         return ['firstname', 'lastname','email','password','status'];
     }
+
+    /** Setup an array with the labels in the form*/
+    public function labels():array
+    {
+        return [
+            'firstname' => 'First name',
+            'lastname' => 'Last name',
+            'email' => 'Email',
+            'password' => 'Password',
+            'confirmPassword' => 'Confirm password'
+        ];
+    }
+
 }

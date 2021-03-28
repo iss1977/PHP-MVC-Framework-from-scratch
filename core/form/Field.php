@@ -44,7 +44,7 @@ class Field
                 </div>
         ',
         $this->attribute, //for
-        $this->attribute, // label
+        $this->model->getLabel($this->attribute) , // label
         $this->type, // type of the field : password, text, number ...
         $this->model->{$this->attribute}, //value
         $this->model->hasErrors($this->attribute) ? 'is-invalid': '', // adding class if there are errors

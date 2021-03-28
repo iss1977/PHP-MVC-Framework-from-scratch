@@ -26,6 +26,17 @@ abstract class Model // abstract just to not create mistakenly an object from it
 
     abstract function rules():array; // this must be implemented
 
+    /** This are the labels for the form model. Will be overwritten in child (ex User) */
+    public function labels():array
+    {
+        return [];
+    }
+
+    public function getLabel($attribute)
+    {
+        return $this->labels()[$attribute]??'ATT.'.$attribute;
+    }
+
     /**
      * Validates the form
     */
@@ -52,6 +63,7 @@ abstract class Model // abstract just to not create mistakenly an object from it
                     $this->addError($attribute, self::RULE_MAX, $rule);
                 }
                 if ($ruleName === self::RULE_MATCH && $this->{$rule['match']} !==$value){
+                    $rule['match'] = $this->getLabel($rule['match']); // to change the text of the error message from 'password' to the label : Password
                     $this->addError($attribute, self::RULE_MATCH, $rule);
                 }
                 if ($ruleName === self::RULE_UNIQUE){
@@ -64,7 +76,7 @@ abstract class Model // abstract just to not create mistakenly an object from it
                     $statement->execute();
                     $record = $statement->fetchObject();
                     if ($record){
-                       $this->addError($attribute, self::RULE_UNIQUE, ['field'=>$attribute]);
+                       $this->addError($attribute, self::RULE_UNIQUE, ['field'=>$this->getLabel($attribute)]);
                     }
 
                 }
