@@ -26,7 +26,7 @@ abstract class Model // abstract just to not create mistakenly an object from it
 
     abstract function rules():array; // this must be implemented
 
-    /** This are the labels for the form model. Will be overwritten in child (ex User) */
+    /** This are the labels for the form model. Will be overwritten in child (ex User and LoginForm) */
     public function labels():array
     {
         return [];
@@ -34,7 +34,7 @@ abstract class Model // abstract just to not create mistakenly an object from it
 
     public function getLabel($attribute)
     {
-        return $this->labels()[$attribute]??'ATT.'.$attribute;
+        return $this->labels()[$attribute]??$attribute;
     }
 
     /**
@@ -51,20 +51,20 @@ abstract class Model // abstract just to not create mistakenly an object from it
                 }
                 // now we have a $ruleName representing the name of th rule. ex: self::RULE_MIN from  " [self::RULE_MIN, 'min' => 8] "
                 if ($ruleName===self::RULE_REQUIRED && !$value){ // if this rule exist and the value is not set, rule not applied.
-                    $this->addError($attribute, self::RULE_REQUIRED);
+                    $this->addErrorForRule($attribute, self::RULE_REQUIRED);
                 }
                 if ($ruleName === self::RULE_EMAIL && !filter_var($value,FILTER_VALIDATE_EMAIL)){
-                    $this->addError($attribute, self::RULE_EMAIL);
+                    $this->addErrorForRule($attribute, self::RULE_EMAIL);
                 }
                 if ($ruleName === self::RULE_MIN && !($rule['min'] <= strlen($value)) ){
-                    $this->addError($attribute, self::RULE_MIN, $rule);
+                    $this->addErrorForRule($attribute, self::RULE_MIN, $rule);
                 }
                 if ($ruleName === self::RULE_MAX && ($rule['max'] < strlen($value)) ){
-                    $this->addError($attribute, self::RULE_MAX, $rule);
+                    $this->addErrorForRule($attribute, self::RULE_MAX, $rule);
                 }
                 if ($ruleName === self::RULE_MATCH && $this->{$rule['match']} !==$value){
                     $rule['match'] = $this->getLabel($rule['match']); // to change the text of the error message from 'password' to the label : Password
-                    $this->addError($attribute, self::RULE_MATCH, $rule);
+                    $this->addErrorForRule($attribute, self::RULE_MATCH, $rule);
                 }
                 if ($ruleName === self::RULE_UNIQUE){
                     $className = $rule['class']; // in this class is the name of the table where the field should be unique.
@@ -76,7 +76,7 @@ abstract class Model // abstract just to not create mistakenly an object from it
                     $statement->execute();
                     $record = $statement->fetchObject();
                     if ($record){
-                       $this->addError($attribute, self::RULE_UNIQUE, ['field'=>$this->getLabel($attribute)]);
+                       $this->addErrorForRule($attribute, self::RULE_UNIQUE, ['field'=>$this->getLabel($attribute)]);
                     }
 
                 }
@@ -91,7 +91,7 @@ abstract class Model // abstract just to not create mistakenly an object from it
      * @param string $rule
      * @param array $params
      */
-    private function addError(string $attribute,string $rule, $params = []) // $params is the $rule . ex: [self::RULE_MIN, 'min' => 8]
+    private function addErrorForRule(string $attribute, string $rule, $params = []) // $params is the $rule . ex: [self::RULE_MIN, 'min' => 8]
     {
         $message = $this->errorMessages()[$rule] ?? '-error-';
         foreach ($params as $key => $value) {
@@ -101,6 +101,12 @@ abstract class Model // abstract just to not create mistakenly an object from it
         $this->errors[$attribute][]= $message; // this way we add an element to the array.
 
     }
+
+    public function addError(string $attribute, string $message) // $params is the $rule . ex: [self::RULE_MIN, 'min' => 8]
+    {
+        $this->errors[$attribute][]= $message; // this way we add an element to the array.
+    }
+
 
     public function errorMessages(): array
     {

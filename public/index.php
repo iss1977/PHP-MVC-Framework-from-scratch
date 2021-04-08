@@ -20,6 +20,7 @@ $dotenv->load();
 
 // Application configuration
 $config = [
+    'userClass' => \app\models\User::class, // We specify the User class name, because the 'core' should contain only reusable code.
     'db' => [
         'dsn' => $_ENV['DB_DNS'],
         'user' => $_ENV['DB_USER'],
@@ -38,5 +39,7 @@ $app->router->get('/login', [AuthController::class,'login']);
 $app->router->post('/login', [AuthController::class,'login']);
 $app->router->get('/register', [AuthController::class,'register']);
 $app->router->post('/register', [AuthController::class,'register']);
+
+$app->router->get('/logout', [AuthController::class,'logout']); // it should be a post request for security reasons. It will also work with get.
 
 $app->run();

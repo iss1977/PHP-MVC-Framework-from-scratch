@@ -49,4 +49,33 @@ class Session
         }
         $_SESSION[self::FLASH_KEY] = $flashMessages; // if empty to avoid errors and to put the modified array (removed messages) back into $_SESSION
     }
+
+    /**
+     * Set a SESSION variable
+     * @param string $key
+     * @param string $value
+     */
+    public function set(string $key, string $value)
+    {
+        $_SESSION[$key]= $value;
+    }
+
+    /**
+     * Get a SESSION variable
+     * @param string $key
+     * @return false|mixed
+     */
+    public function get(string $key)
+    {
+        return $_SESSION[$key] ?? false;
+    }
+
+    /**
+     * Removes a key from the session storage.
+     * @param string $key
+     */
+    public function remove(string $key)
+    {
+        unset($_SESSION[$key]);
+    }
 }

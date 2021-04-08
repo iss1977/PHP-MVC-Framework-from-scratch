@@ -1,3 +1,7 @@
+<?php
+/** @var $model \app\models\User */
+?>
+
     <h1>Registration page</h1>
 
 <!--    Start the form -->

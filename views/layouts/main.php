@@ -1,5 +1,10 @@
 <?php
     use app\core\Application;
+
+//// checking logged in user
+//    echo '<pre>';
+//    var_dump(Application::$app->user);
+//    echo '</pre>';
 ?>
 
 <!doctype html>
@@ -13,7 +18,7 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 
-  <title>Hello, world!</title>
+  <title>Home Page</title>
 </head>
 
 <body>
@@ -25,6 +30,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="/">Home</a>
@@ -32,6 +38,8 @@
           <li class="nav-item">
             <a class="nav-link" href="/contact">Contact</a>
           </li>
+        </ul>
+        <?php if (Application::isGuest()): ?>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
                 <a class="nav-link" href="/register">Register</a>
@@ -40,7 +48,13 @@
                 <a class="nav-link" href="/login">Login</a>
             </li>
         </ul>
-
+        <?php else : ?>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/logout"><?php echo Application::$app->user->getDisplayName(); ?> (Logout)</a>
+            </li>
+        </ul>
+        <?php endif ; ?>
       </div>
     </div>
   </nav>

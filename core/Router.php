@@ -63,7 +63,7 @@
       // call_user_func(array($obj, 'show')); 
       // and this is the way we use this.
       // it will call SiteController with the name of the function both from $callback array and pass as parameter $this->request.
-      return call_user_func($callback, $this->request); //  works also without return....
+      return call_user_func($callback, $this->request, $this->response); //  works also without return....
 
       
     }
