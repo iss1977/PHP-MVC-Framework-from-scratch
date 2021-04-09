@@ -19,13 +19,16 @@ class Application
 
     public static Application $app;
 
-    public Controller $controller;
+    public ?Controller $controller = null;
     public Session $session;
+
+    //we define a default layout, if we don't register a route, there will be no controller defined and we will get an error.
+    public string $defaultLayout = 'main';
 
     /**
      * @return Controller
      */
-    public function getController(): Controller
+    public function getController(): ?Controller
     {
         return $this->controller;
     }
@@ -65,7 +68,15 @@ class Application
     /** Start the application. Will be called from index.php */
     public function run()
     {
-        echo $this->router->resolve();
+        try{
+            echo $this->router->resolve();
+        }catch (\Exception $e){
+            // we have to set the StatusCode of the response accordingly to the error code.
+            $this->response->setStatusCode($e->getCode());
+             echo $this->router->renderView('_error',[
+                'exception' => $e
+            ]);
+        }
     }
 
     /** Login the user, set session key with user ID and save complete user data to Application

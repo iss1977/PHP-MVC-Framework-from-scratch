@@ -41,5 +41,7 @@ $app->router->get('/register', [AuthController::class,'register']);
 $app->router->post('/register', [AuthController::class,'register']);
 
 $app->router->get('/logout', [AuthController::class,'logout']); // it should be a post request for security reasons. It will also work with get.
+$app->router->get('/profile', [AuthController::class,'profile']); // it should be a post request for security reasons. It will also work with get.
+
 
 $app->run();

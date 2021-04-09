@@ -6,6 +6,8 @@
 
  namespace app\core;
 
+ use app\core\exceptions\NotFoundException;
+
  class Router
  {
     protected array $routes = [];
@@ -39,8 +41,9 @@
       $callback = $this->routes[$method][$path] ?? false; // we can get the corresponding callback function from the routes array
 
       if($callback ===false){
-        $this->response->setStatusCode(404);
-        return $this->renderView('_404');
+        //        $this->response->setStatusCode(404); // we gonna move this to Application -> run where we ahndle the exception and we set the status code that corresponds
+        //        return $this->renderView('_404');
+        throw new NotFoundException();
       }
 
       //if $callback is string, then we assume that we want to load a view. So we are calling renderView()...
@@ -51,13 +54,19 @@
       
       // if we get to this point, $callback can be an array (see index.php).
       if(is_array($callback)){
-        $nameOfClass = $callback[0];
-        $temporaryObject = new $nameOfClass();
-        $callback[0] = $temporaryObject; // we prepare $callback to be an array with an instance on first element and the function name as second element.
-          Application::$app->setController($temporaryObject);
 
+        /** @var Controller $controller */
+        $controller =   new $callback[0](); // we create a new controller based on the name of the class stored on pos1 in the array $callback.
+        Application::$app->setController($controller);
+        $controller->action = $callback[1]; // set the current action in the controller so we can check if route is allowed for the current user.
+        $callback[0] = $controller; // we prepare the $callback array to be sent to "call_user_func". At position 0 will be the object to be called the method on.
+
+        foreach ($controller->getMiddlewares() as $middleware) // iterate the middleware objects stored in the $controller
+            $middleware->execute(); // this will throw an exception if route not allowed.
       }
-      
+
+
+
       // geeksforgeeks: Another way to use object 
       // $obj = new GFG(); 
       // call_user_func(array($obj, 'show')); 
@@ -83,7 +92,10 @@
     }
 
     protected function layoutContent(){
-        $layout = Application::$app->getController()->layout;
+        $layout = Application::$app->defaultLayout;
+        if (Application::$app->getController())
+            $layout = Application::$app->getController()->layout;
+
 
       // webpage output buffer
       ob_start();
